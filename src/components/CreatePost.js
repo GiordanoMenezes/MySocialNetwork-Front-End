@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Page from './Page';
 import { createPost } from '../services/PostRepository';
 import { withRouter } from 'react-router-dom';
+import DispatchContext from '../DispatchContext';
 
 function CreatePost(props) {
 
   const [title, setTitle] = useState();
   const [body, setBody] = useState();
+
+  const dispatch = useContext(DispatchContext);
 
   async function handleSubmit(evt) {
     evt.preventDefault();
@@ -16,7 +19,7 @@ function CreatePost(props) {
         body,
         token: localStorage.getItem('complexapp-token')
       });
-      props.addMessage("Congrats! You successfuly created a post.")
+      dispatch({ type: 'flashmessage', value: "Congrats! You successfully created a post." })
       props.history.push(`/post/${response.data}`)
     } catch (error) {
       console.log(error);

@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import StateContext from "../StateContext";
 import HeaderLoggedIn from "./HeaderLoggedIn";
 import HeaderLoggedOut from "./HeaderLoggedOut";
 
 function Header(props) {
+
+  const loggedIn = useContext(StateContext);
 
   return (
     <header className="header-bar bg-primary mb-3">
@@ -13,8 +16,8 @@ function Header(props) {
             MySocialNetwork
           </Link>
         </h4>
-        {props.loggedIn ? <HeaderLoggedIn setLoggedIn={props.setLoggedIn} />
-          : <HeaderLoggedOut setLoggedIn={props.setLoggedIn} />}
+        {loggedIn ? <HeaderLoggedIn />
+          : <HeaderLoggedOut />}
       </div>
     </header>
   );

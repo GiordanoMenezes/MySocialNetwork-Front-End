@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import DispatchContext from "../DispatchContext";
 import { loginUser } from "../services/LoginService";
 
 function HeaderLoggedOut(props) {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const dispatch = useContext(DispatchContext);
 
   async function handleSubmit(evt) {
     evt.preventDefault();
@@ -12,7 +14,7 @@ function HeaderLoggedOut(props) {
         username,
         password,
       });
-      props.setLoggedIn(true);
+      dispatch({ type: 'login' })
     } catch (e) {
       console.log(e);
     }

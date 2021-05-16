@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 //My components
 import Header from "./components/Header";
@@ -12,31 +12,54 @@ import HomeUser from "./components/HomeUser";
 import CreatePost from "./components/CreatePost";
 import SinglePost from "./components/SinglePost";
 import FlashMessage from "./components/FlashMessages";
+import DispatchContext from "./DispatchContext";
+import StateContext from "./StateContext";
+import { useImmerReducer } from "use-immer";
 
 function App() {
 
-  const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem("complexapp-token")));
-  const [messages, setMessages] = useState([]);
+  const initialState = {
+    loggedIn: Boolean(localStorage.getItem("complexapp-token")),
+    flashMessages: [],
+  };
 
-  function addMessage(message) {
-    setMessages(prev => prev.concat(message));
-  }
+  const myReducer = (draft, action) => {
+    switch (action.type) {
+      case "login":
+        draft.loggedIn = true;
+        break;
+      case "logout":
+        draft.loggedIn = false;
+        break;
+      case "flashMessage":
+        draft.flashMessages.push(action.value);
+        break;
+      default:
+        return draft;
+    }
+  };
+
+  const [state, dispatch] = useImmerReducer(myReducer, initialState);
 
   return (
-    <BrowserRouter>
-      <FlashMessage messages={messages} />
-      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-      <Switch>
-        <Route path="/" exact component={loggedIn ? HomeUser : HomeGuest} />
-        <Route path="/about-us" exact component={About} />
-        <Route path="/terms" exact component={Terms} />
-        <Route path="/post/:id" component={SinglePost} />
-        <Route path="/create-post" exact>
-          <CreatePost addMessage={addMessage} />
-        </Route>
-      </Switch>
-      <Footer />
-    </BrowserRouter >
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        <BrowserRouter>
+          <FlashMessage />
+          <Header />
+          <Switch>
+            <Route path="/" exact component={state.loggedIn ? HomeUser : HomeGuest} />
+            <Route path="/about-us" exact component={About} />
+            <Route path="/terms" exact component={Terms} />
+            <Route path="/post/:id" component={SinglePost} />
+            <Route path="/create-post" exact>
+              <CreatePost />
+            </Route>
+          </Switch>
+          <Footer />
+        </BrowserRouter >
+      </DispatchContext.Provider>
+    </StateContext.Provider>
   );
 }
 
